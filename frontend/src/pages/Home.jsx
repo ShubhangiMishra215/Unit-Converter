@@ -29,7 +29,7 @@ const Home = () => {
     }
 
     try {
-      const response = await fetch("https://unit-converter-gs3c.onrender.com", {
+      const response = await fetch("https://unit-converter-gs3c.onrender.com/api/convert", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -4,15 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 const unitsByCategory = {
   length: [
-    "millimeter",
-    "centimeter",
-    "meter",
-    "kilometer",
-    "inch",
-    "foot",
-    "yard",
-    "mile",
-  ],
+    "millimeter","centimeter","meter","kilometer","inch","foot","yard","mile",],
   weight: ["milligram", "gram", "kilogram", "ounce", "pound"],
   temperature: ["Celsius", "Fahrenheit", "Kelvin"],
 };
@@ -37,7 +29,7 @@ const Home = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/convert", {
+      const response = await fetch("https://unit-converter-gs3c.onrender.com", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -70,16 +62,7 @@ const Home = () => {
   return (
     <div className="flex justify-center items-center min-h-screen px-5">
       <div
-        className="
-        w-full
-        max-w-xl
-        rounded-3xl
-        bg-white/10
-        backdrop-blur-2xl
-        border
-        border-white/20
-        shadow-[0_20px_80px_rgba(0,0,0,0.4)]
-        p-10
+        className="w-full max-w-xl rounded-3xl bg-white/10 backdrop-blur-2xl border border-white/20 shadow-[0_20px_80px_rgba(0,0,0,0.4)]     p-10
       "
       >
         <Header category={category} setCategory={setCategory} />

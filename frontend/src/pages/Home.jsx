@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 
 const unitsByCategory = {
   length: [
-    "millimeter","centimeter","meter","kilometer","inch","foot","yard","mile",],
+    "millimeter", "centimeter", "meter", "kilometer", "inch", "foot", "yard", "mile",
+  ],
   weight: ["milligram", "gram", "kilogram", "ounce", "pound"],
   temperature: ["Celsius", "Fahrenheit", "Kelvin"],
 };
@@ -16,6 +17,7 @@ const Home = () => {
   const [value, setValue] = useState("");
   const [from, setFrom] = useState(unitsByCategory.length[0]);
   const [to, setTo] = useState(unitsByCategory.length[1]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setFrom(unitsByCategory[category][0]);
@@ -23,10 +25,13 @@ const Home = () => {
   }, [category]);
 
   async function handleConvert() {
-    if (!value) {
-      alert("Please enter a value");
+    // Fix: validate empty string AND non-numeric input, not just falsy check
+    if (value === "" || isNaN(Number(value))) {
+      alert("Please enter a valid number");
       return;
     }
+
+    setLoading(true);
 
     try {
       const response = await fetch("https://unit-converter-gs3c.onrender.com/api/convert", {
@@ -36,11 +41,17 @@ const Home = () => {
         },
         body: JSON.stringify({
           category,
-          value,
+          value: Number(value), // Fix: send as number, not string
           from,
           to,
         }),
       });
+
+      // Fix: check response status before trusting the payload
+      if (!response.ok) {
+        alert("Conversion failed. Please try again.");
+        return;
+      }
 
       const data = await response.json();
 
@@ -56,14 +67,15 @@ const Home = () => {
     } catch (err) {
       console.log(err);
       alert("Something went wrong!");
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <div className="flex justify-center items-center min-h-screen px-5">
       <div
-        className="w-full max-w-xl rounded-3xl bg-white/10 backdrop-blur-2xl border border-white/20 shadow-[0_20px_80px_rgba(0,0,0,0.4)]     p-10
-      "
+        className="w-full max-w-xl rounded-3xl bg-white/10 backdrop-blur-2xl border border-white/20 shadow-[0_20px_80px_rgba(0,0,0,0.4)] p-10"
       >
         <Header category={category} setCategory={setCategory} />
 
@@ -123,11 +135,7 @@ const Home = () => {
             "
             >
               {unitsByCategory[category].map((unit) => (
-                <option
-                  key={unit}
-                  value={unit}
-                  className="text-black"
-                >
+                <option key={unit} value={unit} className="text-black">
                   {unit}
                 </option>
               ))}
@@ -159,11 +167,7 @@ const Home = () => {
             "
             >
               {unitsByCategory[category].map((unit) => (
-                <option
-                  key={unit}
-                  value={unit}
-                  className="text-black"
-                >
+                <option key={unit} value={unit} className="text-black">
                   {unit}
                 </option>
               ))}
@@ -173,6 +177,7 @@ const Home = () => {
           {/* Button */}
           <button
             onClick={handleConvert}
+            disabled={loading}
             className="
             w-full
             py-4
@@ -189,9 +194,11 @@ const Home = () => {
             hover:shadow-cyan-500/40
             transition-all
             duration-300
+            disabled:opacity-50
+            disabled:hover:scale-100
           "
           >
-            Convert →
+            {loading ? "Converting..." : "Convert →"}
           </button>
         </div>
       </div>
